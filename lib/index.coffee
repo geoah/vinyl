@@ -9,14 +9,10 @@ class Model
     return console.info "Saving #{@doc} to #{@db}."
 
   @compile: (db) ->
-    # that = this
+    # generate new class; aka I <3 aheckmann
     class model extends this
-
     model.prototype.db = db
 
-    # model.__proto__ = that # Model
-    # model.prototype.__proto__ = that.prototype # Model.prototype
-    
     return model
 
 class Submodel extends Model
