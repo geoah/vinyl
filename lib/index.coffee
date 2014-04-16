@@ -1,12 +1,14 @@
 class Model
   constructor: (@doc) ->
 
+  bind: (@db) ->
+
   whoami: () ->
-    console.info 'iam model'
+    console.info 'iam a basic model'
 
   save: () ->
     return console.error 'Missing the point award.' if not this.db
-    return console.info "Saving #{@doc} to #{@db}."
+    return console.info "Saving #{@doc} on #{@db.db}/#{@collection}."
 
   @compile: (db) ->
     # generate new class; aka I <3 aheckmann
@@ -15,30 +17,54 @@ class Model
 
     return model
 
-class Submodel extends Model
-  sub: true
+class Something extends Model
+  collection: 'somethings'
 
   whoami: () ->
-    console.info 'iam SUBmodel'
+    console.info 'iam something'
 
-classSub1 = Submodel.compile 'db1'
-classSub2 = Submodel.compile 'db2'
-classSub3 = Submodel.compile 'db3'
+class Nothing extends Model
+  collection: 'nothings'
 
-m0 = new Model 'id0'
-m1 = new classSub1 'id1-on-db1'
-m2 = new classSub2 'id2-on-db2'
-m3 = new classSub3 'id3-on-db3'
-m4 = new Submodel 'id4'
-m5 = new classSub2 'id5-on-db2'
+  whoami: () ->
+    console.info 'iam nothing'
 
-m3.save()
-m0.save()
-m1.save()
-m2.save()
-m4.save()
-m5.save()
+class Db
+  models:
+    Something: Something
+    Nothing: Nothing
 
-m0.whoami()
-m4.whoami()
-m5.whoami()
+  model: (name) ->
+    return console.error "Missing model '#{name}'." if not @models[name]?
+    return @models[name].compile this
+
+class FirstDb extends Db
+  db: 'first-db'
+
+class SecondDb extends Db
+  db: 'second-db'
+
+firstDb = new FirstDb
+secondDb = new SecondDb
+
+NothingOnFirstdb = firstDb.model 'Nothing'
+SomethingOnFirstdb = firstDb.model 'Something'
+
+NothingOnSecondDb = secondDb.model 'Nothing'
+SomethingOnSecondDb = secondDb.model 'Something'
+
+n1a = new NothingOnFirstdb 'nothing-a-on-first-db'
+n1b = new NothingOnFirstdb 'nothing-b-on-first-db'
+
+n2a = new NothingOnSecondDb 'nothing-a-on-second-db'
+s2a = new SomethingOnSecondDb 'something-a-on-second-db'
+
+console.info n1a
+console.info n1b
+console.info n2a
+console.info s2a
+
+n1a.save()
+n1b.save()
+n2a.save()
+s2a.save()
