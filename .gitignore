@@ -1,0 +1,13 @@
+# Node
+node_modules
+
+# Coffee-Script
+lib/*.js
+lib/*.map
+
+app.js
+app.map
+
+# OS
+.DS_Store
+._*
