@@ -59,15 +59,14 @@ SomethingOnSecondDb = secondDb.model 'Something'
 
 # And now we can use.
 
-n1a = new NothingOnFirstdb name: 'nothing-a-on-first-db'
+n1a = new NothingOnFirstdb name: 'nothing-a-on-first-db-1a'
 n1b = new NothingOnFirstdb name: 'nothing-b-on-first-db'
 
-#n1a.save (err, result) ->
-#  console.info err, result
-#
+n1a.save (err, result) ->
+  console.info err, result
 
-NothingOnFirstdb.find {}, {}, {}, (err, array) =>
-  console.info err, array
+  NothingOnFirstdb.find {}, {}, {}, (err, array) =>
+    console.info err, array
 
 #
 #n2a = new NothingOnSecondDb 'nothing-a-on-second-db'

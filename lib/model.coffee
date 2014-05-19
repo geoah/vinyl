@@ -9,16 +9,25 @@ class Model
   save: (cb) ->
     console.info "Saving on #{@_db.url}/#{@collection}."
 
-    query = if @_id then _id: @_id else {}
+    query = if @_id then _id: @_id else undefined
     doc = {}
-    for key, value of @
+    for own key, value of @
       doc[key] = value
 
-    @_db.findAndModify @collection, query, {}, doc, {}, (err, result) =>
-      return cb err if err
-      @_id = result._id
-      console.info @
-      cb undefined, @
+    if doc['_id']
+      options = upsert: true
+      @_db.findAndModify @collection, query, {}, doc, options, (err, result) =>
+        return cb err if err
+        @_id = result._id
+        console.info 'MODIFIED', doc
+        cb undefined, @
+    else
+      options = {}
+      @_db.insert @collection, doc, options, (err, result) =>
+        return cb err if err
+        @_id = result._id
+        console.info 'SAVED', doc
+        cb undefined, @
 
   @_compile: (db) ->
     # generate new class; aka I <3 aheckmann
@@ -41,8 +50,6 @@ class Model
     @prototype._db.findAndModify @prototype.collection, query, sort, document, options, cb
 
   @insert: (documents, options, cb) ->
-    @prototype._db.collection @prototype.collection, (err, collection) =>
-      return cb err if err
-      collection.insert documents, options, cb
+    @prototype._db.insert @prototype.collection, document, options, cb
 
 module.exports = Model

@@ -67,4 +67,9 @@ class Db
       return cb err if err
       collection.findAndModify query, sort, document, options, cb
 
+  insert: (collectionName, document, options, cb) =>
+    @collection collectionName, (err, collection) =>
+      return cb err if err
+      collection.insert document, options, cb
+
 module.exports = Db
