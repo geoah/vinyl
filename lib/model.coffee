@@ -1,16 +1,24 @@
 class Model
   constructor: (doc) ->
-    @_doc = doc
+    for key, value of doc
+      @[key] = value
 
   bind: (db) ->
     @_db = db
 
-  whoami: () ->
-    console.info 'iam a basic model'
+  save: (cb) ->
+    console.info "Saving on #{@_db.url}/#{@collection}."
 
-  save: () ->
-    return console.error 'Missing the point award.' if not this.db
-    return console.info "Saving #{@doc} on #{@db.db}/#{@collection}."
+    query = if @_id then _id: @_id else {}
+    doc = {}
+    for key, value of @
+      doc[key] = value
+
+    @_db.findAndModify @collection, query, {}, doc, {}, (err, result) =>
+      return cb err if err
+      @_id = result._id
+      console.info @
+      cb undefined, @
 
   @_compile: (db) ->
     # generate new class; aka I <3 aheckmann
@@ -30,9 +38,7 @@ class Model
           cb undefined, array
 
   @findAndModify: (query, sort, document, options, cb) ->
-    @prototype._db.collection @prototype.collection, (err, collection) =>
-      return cb err if err
-      collection.findAndModify query, sort, document, options, cb
+    @prototype._db.findAndModify @prototype.collection, query, sort, document, options, cb
 
   @insert: (documents, options, cb) ->
     @prototype._db.collection @prototype.collection, (err, collection) =>
