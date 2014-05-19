@@ -6,28 +6,24 @@ class Model
   bind: (db) ->
     @_db = db
 
-  save: (cb) ->
+  save: (cb) =>
     console.info "Saving on #{@_db.url}/#{@collection}."
 
-    query = if @_id then _id: @_id else undefined
     doc = {}
-    for own key, value of @
-      doc[key] = value
+    for own key, value of @ then doc[key] = value
 
-    if doc['_id']
-      options = upsert: true
-      @_db.findAndModify @collection, query, {}, doc, options, (err, result) =>
-        return cb err if err
-        @_id = result._id
-        console.info 'MODIFIED', doc
-        cb undefined, @
+    # console.info @collection, @__proto__.collection, @constructor.prototype.collection
+    collection = @__proto__.collection
+
+    _cb = (err, data) =>
+      return cb err if err
+      @_id = data._id if not @_id
+      cb undefined, data
+
+    if @_id
+      @_db.findAndModify collection, id: @_id, {}, doc, upsert: true, _cb
     else
-      options = {}
-      @_db.insert @collection, doc, options, (err, result) =>
-        return cb err if err
-        @_id = result._id
-        console.info 'SAVED', doc
-        cb undefined, @
+      @_db.insert collection, doc, undefined, _cb
 
   @_compile: (db) ->
     # generate new class; aka I <3 aheckmann
