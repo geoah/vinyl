@@ -14,6 +14,13 @@ class Nothing extends Vinyl.Model
   whoami: () ->
     console.info 'iam nothing'
 
+  @find: (query, fields, options, cb) ->
+    _cb = (err, data) ->
+      console.info 'GOT DATA'
+      cb err, data
+
+    super query, fields, options, _cb
+
 # Register models in Db.
 
 Vinyl.Db.register 'Something', Something
@@ -43,8 +50,6 @@ SomethingOnSecondDb = secondDb.model 'Something'
 #NothingOnSecondDb.insert [{name: 'test-doc-2'}], {}, (err, result) ->
 #  console.info err, result
 
-#NothingOnFirstdb.find {}, {}, {}, (err, array) =>
-#  console.info err, array
 
 #NothingOnSecondDb.find {}, {}, {}, (err, array) =>
 #  console.info err, array
@@ -54,8 +59,16 @@ SomethingOnSecondDb = secondDb.model 'Something'
 
 # And now we can use.
 
-#n1a = new NothingOnFirstdb 'nothing-a-on-first-db'
-#n1b = new NothingOnFirstdb 'nothing-b-on-first-db'
+n1a = new NothingOnFirstdb name: 'nothing-a-on-first-db'
+n1b = new NothingOnFirstdb name: 'nothing-b-on-first-db'
+
+#n1a.save (err, result) ->
+#  console.info err, result
+#
+
+NothingOnFirstdb.find {}, {}, {}, (err, array) =>
+  console.info err, array
+
 #
 #n2a = new NothingOnSecondDb 'nothing-a-on-second-db'
 #s2a = new SomethingOnSecondDb 'something-a-on-second-db'
