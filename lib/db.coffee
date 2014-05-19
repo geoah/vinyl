@@ -62,4 +62,9 @@ class Db
     return console.error "Missing model '#{name}'." if not @models[name]?
     return @models[name]._compile this
 
+  findAndModify: (collectionName, query, sort, document, options, cb) =>
+    @collection collectionName, (err, collection) =>
+      return cb err if err
+      collection.findAndModify query, sort, document, options, cb
+
 module.exports = Db
