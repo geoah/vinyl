@@ -58,6 +58,16 @@ class Db
         @_collections[collectionName] = collection
         return cb undefined, @_collections[collectionName]
 
+  find: (collectionName, query, fields, options, cb) ->
+    @collection collectionName, (err, collection) =>
+      return cb err if err
+      collection.find query, fields, options, (err, cursor) =>
+        return cb err if err
+        cursor.toArray (err, rows) =>
+          return cb err if err
+          cursor.close() if not cursor.isClosed()
+          cb undefined, rows
+
   model: (name) =>
     return console.error "Missing model '#{name}'." if not @models[name]?
     return @models[name]._compile this
