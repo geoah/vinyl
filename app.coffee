@@ -51,18 +51,25 @@ SomethingOnSecondDb = secondDb.model 'Something'
 #  console.info err, result
 
 
-#NothingOnSecondDb.find {}, {}, {}, (err, array) =>
-#  console.info err, array
+console.info 'rest'
+
+i = 0
+NothingOnFirstdb.find {}, {}, {}, (err, array) =>
+  for row in array
+    console.info row
+    row.something = i++
+    row.save (err, _row) ->
+      console.info err, _row
 
 #NothingOnFirstdb.find {}, {}, {}, (err, array) =>
 #  console.info err, array
 
 # And now we can use.
 
-n1a = new NothingOnFirstdb name: 'nothing-2b', collection: 'making sure this doesnt break anything'
-n1b = new NothingOnFirstdb name: 'nothing-b-on-first-db'
+#n1a = new NothingOnFirstdb name: 'nothing-2b', collection: 'making sure this doesnt break anything'
+#n1b = new NothingOnFirstdb name: 'nothing-b-on-first-db'
 
-n1a.save (err, result) ->
+#n1a.save (err, result) ->
 #  console.info err, result
 
 #  NothingOnFirstdb.find {}, {}, {}, (err, array) =>

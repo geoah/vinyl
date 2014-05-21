@@ -1,3 +1,5 @@
+ObjectID = require('mongodb').ObjectID
+
 class Model
   constructor: (doc) ->
     for key, value of doc
@@ -21,7 +23,10 @@ class Model
       cb undefined, data
 
     if @_id
-      @_db.findAndModify collection, id: @_id, {}, doc, upsert: true, _cb
+      query = _id: new ObjectID @_id
+      sort = undefined
+      options = upsert: true
+      @_db.findAndModify collection, query, sort, doc, options, _cb
     else
       @_db.insert collection, doc, undefined, _cb
 
@@ -40,7 +45,11 @@ class Model
         cursor.toArray (err, array) =>
           return cb err if err
           cursor.close() if not cursor.isClosed()
-          cb undefined, array
+          models = []
+          for row in array
+            models.push new @ row
+          console.info array, models
+          cb undefined, models
 
   @findAndModify: (query, sort, document, options, cb) ->
     @prototype._db.findAndModify @prototype.collection, query, sort, document, options, cb
