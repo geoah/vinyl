@@ -47,6 +47,12 @@ class Model
       for row in rows then models.push new @ row
       cb undefined, models
 
+  @findOne: (query, fields, options, cb) ->
+    @prototype._db.findOne @prototype.collection, query, fields, options, (err, row) =>
+      return cb err if err
+      model = new @ row
+      cb undefined, model
+
   @findAndModify: (query, sort, document, options, cb) ->
     @prototype._db.findAndModify @prototype.collection, query, sort, document, options, cb
 

@@ -68,6 +68,13 @@ class Db
           cursor.close() if not cursor.isClosed()
           cb undefined, rows
 
+  findOne: (collectionName, query, fields, options, cb) ->
+    @collection collectionName, (err, collection) =>
+      return cb err if err
+      collection.findOne query, fields, options, (err, row) =>
+        return cb err if err
+        cb undefined, row
+
   model: (name) =>
     return console.error "Missing model '#{name}'." if not @models[name]?
     return @models[name]._compile this
