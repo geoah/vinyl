@@ -15,9 +15,9 @@ class Model
     # console.info @collection, @__proto__.collection, @constructor.prototype.collection
     collectionName = @__proto__.collection
 
-    _cb = (err, row) =>
+    _cb = (err, rows) =>
       return cb err if err
-      @_map row
+      @_map rows[0]
       cb undefined, @
 
     if @_id
