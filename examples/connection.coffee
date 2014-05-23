@@ -17,6 +17,6 @@ class Nothing extends Vinyl.Model
 # Now we just use them.
 
 n = new Nothing name: 'a-nothing-on-db'
-n.save (err, result) -> console.info err, result
+n.save (err, doc) -> console.info err, doc.toJSON()
 
 # Note: When using this method, using db.model(modelName) is not possible.
