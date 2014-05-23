@@ -38,6 +38,16 @@ class Model
     return model
 
   @find: (query, fields, options, cb) ->
+    if not cb
+      if not options
+        cb = fields
+        options = {}
+        fields = {}
+      else
+        cb = options
+        options = fields
+        fields = {}
+
     @prototype.db.find @prototype.collection, query, fields, options, (err, rows) =>
       return cb err if err
       models = []
@@ -45,12 +55,32 @@ class Model
       cb undefined, models
 
   @findOne: (query, fields, options, cb) ->
+    if not cb
+      if not options
+        cb = fields
+        options = {}
+        fields = {}
+      else
+        cb = options
+        options = fields
+        fields = {}
+
     @prototype.db.findOne @prototype.collection, query, fields, options, (err, row) =>
       return cb err if err
       model = new @ row
       cb undefined, model
 
   @findById: (_id, fields, options, cb) ->
+    if not cb
+      if not options
+        cb = fields
+        options = {}
+        fields = {}
+      else
+        cb = options
+        options = fields
+        fields = {}
+
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
     @prototype.db.findOne @prototype.collection, query, fields, options, (err, row) =>
@@ -59,9 +89,17 @@ class Model
       cb undefined, model
 
   @findAndModify: (query, sort, document, options, cb) ->
+    if not cb
+      cb = options
+      options = {}
+
     @prototype.db.findAndModify @prototype.collection, query, sort, document, options, cb
 
   @insert: (documents, options, cb) ->
+    if not cb
+      cb = options
+      options = {}
+
     @prototype.db.insert @prototype.collection, document, options, cb
 
 toJSON = (object) ->
