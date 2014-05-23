@@ -87,6 +87,11 @@ class Db
       return cb err if err
       collection.findAndModify query, sort, document, options, cb
 
+  remove: (collectionName, query, options, cb) =>
+    @collection collectionName, (err, collection) =>
+      return cb err if err
+      collection.remove query, options, cb
+
   insert: (collectionName, document, options, cb) =>
     @collection collectionName, (err, collection) =>
       return cb err if err
