@@ -18,9 +18,11 @@ class Nothing extends Vinyl.Model
 
 n = new Nothing name: 'a-nothing-on-db'
 n.save (err, doc) ->
-  console.info err, doc.toJSON()
+  return console.error err if err
+  console.info doc.toJSON()
 
   doc.soMuch = 'amazed'
 
   doc.save (err, doc) ->
-    console.info err, doc.toJSON()
+    return console.error err if err
+    console.info doc.toJSON()
