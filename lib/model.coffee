@@ -9,11 +9,16 @@ class Model
     for key, value of doc
       @[key] = value
 
-  save: (cb) =>
-    doc = @toJSON()
+  remove: (cb) ->
+    return throw new Error 'Missing _id' if not @_id?
+    @constructor.removeById @_id, (err, numberOfRemovedDocs) =>
+      return cb err if err
+      return cb "Error: Number of removed documents: #{numberOfRemovedDocs}" if numberOfRemovedDocs isnt 1
+      delete @_id
+      cb undefined, 1
 
-    # console.info @collection, @__proto__.collection, @constructor.prototype.collection
-    collectionName = @__proto__.collection
+  save: (cb) ->
+    doc = @toJSON()
 
     _cb = (err, rows) =>
       return cb err if err
@@ -24,9 +29,9 @@ class Model
       query = _id: new ObjectID @_id
       sort = undefined
       options = upsert: true
-      @__proto__.db.findAndModify collectionName, query, sort, doc, options, _cb
+      @constructor.findAndModify query, sort, doc, options, _cb
     else
-      @__proto__.db.insert collectionName, doc, safe: true, _cb
+      @constructor.insert doc, safe: true, _cb
 
   toJSON: ->
     return toJSON @
@@ -100,7 +105,27 @@ class Model
       cb = options
       options = {}
 
-    @prototype.db.insert @prototype.collection, document, options, cb
+    @prototype.db.insert @prototype.collection, documents, options, cb
+
+  @remove: (query, options, cb) ->
+    if not cb
+      cb = options
+      options = {}
+
+    @prototype.db.remove @prototype.collection, query, options, (err, result) =>
+      return cb err if err
+      cb undefined, result
+
+  @removeById: (_id, options, cb) ->
+    if not cb
+      cb = options
+      options = {}
+
+    _id = new ObjectID _id if typeof _id is 'string'
+    query = _id: _id
+    @prototype.db.remove @prototype.collection, query, fields, options, (err, result) =>
+      return cb err if err
+      cb undefined, result
 
 toJSON = (object) ->
   doc = {}
