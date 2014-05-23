@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/geoah/vinyl",
   "dependencies": {
-    "mongodb": "^1.4.4"
+    "mongodb": "^1.4.4",
+    "regexp-clone": "0.0.1"
   }
 }
