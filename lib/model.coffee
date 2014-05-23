@@ -1,4 +1,5 @@
 ObjectID = require('mongodb').ObjectID
+regexpClone = require 'regexp-clone'
 
 class Model
   constructor: (doc) ->
@@ -9,8 +10,7 @@ class Model
       @[key] = value
 
   save: (cb) =>
-    doc = {}
-    for own key, value of @ then doc[key] = value
+    doc = @toJSON()
 
     # console.info @collection, @__proto__.collection, @constructor.prototype.collection
     collectionName = @__proto__.collection
@@ -27,6 +27,9 @@ class Model
       @__proto__.db.findAndModify collectionName, query, sort, doc, options, _cb
     else
       @__proto__.db.insert collectionName, doc, safe: true, _cb
+
+  toJSON: ->
+    return toJSON @
 
   @_compile: (db) ->
     # generate new class; aka I <3 aheckmann
@@ -52,5 +55,23 @@ class Model
 
   @insert: (documents, options, cb) ->
     @prototype.db.insert @prototype.collection, document, options, cb
+
+toJSON = (object) ->
+  doc = {}
+  for own key, value of object
+    if typeof value is 'function'
+      # Ignore
+    else if value instanceof Date
+      doc[key] = new value.constructor +value
+    else if value instanceof RegExp
+      doc[key] = regexpClone value
+    else if value instanceof ObjectID
+      doc[key] = new ObjectID value.id
+    else if value instanceof Object
+      doc[key] = toJSON value
+    else
+      console.info key, typeof value
+      doc[key] = value
+  return doc
 
 module.exports = Model
