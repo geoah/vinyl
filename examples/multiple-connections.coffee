@@ -29,5 +29,5 @@ Something2 = db2.model 'Something'
 n1 = new Nothing1 name: 'a-nothing-on-db1'
 n2 = new Nothing2 name: 'a-nothing-on-db2'
 
-n1.save (err, result) -> console.info err, result
-n2.save (err, result) -> console.info err, result
+n1.save (err, doc) -> console.info err, doc.toJSON()
+n2.save (err, doc) -> console.info err, doc.toJSON()
