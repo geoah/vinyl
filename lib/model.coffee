@@ -88,7 +88,7 @@ class Model
 
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
-    @constructor.findOne query, fields, options, (err, row) =>
+    @prototype.db.findOne @prototype.collection, query, fields, options, (err, row) =>
       return cb err if err
       model = new @ row
       cb undefined, model
@@ -100,7 +100,7 @@ class Model
 
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
-    @constructor.findAndModify query, {}, document, options, cb
+    @prototype.db.findAndModify @prototype.collection, query, {}, document, options, cb
 
   @findAndModify: (query, sort, document, options, cb) ->
     if not cb
@@ -132,7 +132,7 @@ class Model
 
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
-    @constructor.remove @prototype.collection, query, fields, options, (err, result) =>
+    @prototype.db.remove @prototype.collection, query, fields, options, (err, result) =>
       return cb err if err
       cb undefined, result
 
