@@ -132,7 +132,7 @@ class Model
 
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
-    @prototype.db.remove @prototype.collection, query, fields, options, (err, result) =>
+    @prototype.db.remove @prototype.collection, query, options, (err, result) =>
       return cb err if err
       cb undefined, result
 
