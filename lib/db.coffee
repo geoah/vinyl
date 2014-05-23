@@ -15,14 +15,15 @@ class Db
     @_connecting = @_connected = false
     @_collections = []
 
-    console.info 'constructor()',
     @_url = url
     @_options = options
 
   connect: (cb) =>
     mongodb.connect @_url, @_options, (err, db) =>
       @_connecting = false
-      return cb err if err
+      if err
+        @_connecting = false
+        return cb err
 
       @_connected = true
       @_collections = {}
@@ -31,6 +32,7 @@ class Db
       @_db.on 'close', (err) =>
         @_collections = {}
         console.error err if err
+        return cb err
 
       cb undefined, db
 
@@ -48,6 +50,7 @@ class Db
 
     if not @_connected
       return @connect (err) =>
+        return cb err if err
         return @collection collectionName, options, cb
 
     if @_collections[collectionName]
