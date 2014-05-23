@@ -70,7 +70,6 @@ toJSON = (object) ->
     else if value instanceof Object
       doc[key] = toJSON value
     else
-      console.info key, typeof value
       doc[key] = value
   return doc
 
