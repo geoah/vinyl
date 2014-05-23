@@ -50,6 +50,14 @@ class Model
       model = new @ row
       cb undefined, model
 
+  @findById: (_id, fields, options, cb) ->
+    _id = new ObjectID _id if typeof _id is 'string'
+    query = _id: _id
+    @prototype.db.findOne @prototype.collection, query, fields, options, (err, row) =>
+      return cb err if err
+      model = new @ row
+      cb undefined, model
+
   @findAndModify: (query, sort, document, options, cb) ->
     @prototype.db.findAndModify @prototype.collection, query, sort, document, options, cb
 
