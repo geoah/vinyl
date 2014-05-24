@@ -4,7 +4,6 @@ class Db
   models: {}
 
   @register = (name, model) =>
-    console.info name, model
     @::models[name] = model
 
     return @
