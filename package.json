@@ -19,5 +19,8 @@
     "coffee-script": "1.7.x",
     "mongodb": "^1.4.4",
     "regexp-clone": "0.0.1"
+  },
+  "devDependencies": {
+    "jasmine-node": "1.14.x"
   }
 }
