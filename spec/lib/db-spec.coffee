@@ -5,11 +5,16 @@ describe "Db", ->
     @subject = new Db("mongodb://foo.bar:1234")
 
   describe ".register()", ->
+    beforeEach ->
+      @name  = "Book"
+      @model = createSpy(@name)
+
     it "registers model with Db", ->
-      name = "Book"
-      model = jasmine.createSpy(name)
-      expect(Db.register(name, model)).toBe(Db)
-      expect(Db::models[name]).toBe(model)
+      Db.register(@name, @model)
+      expect(Db::models[@name]).toBe(@model)
+
+    it "returns Db", ->
+      expect(Db.register(@name, @model)).toBe(Db)
 
   describe "insert()", ->
     beforeEach ->
