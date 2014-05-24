@@ -3,10 +3,9 @@ mongodb = require 'mongodb'
 class Db
   models: {}
 
-  @register = (name, model) =>
-    @::models[name] = model
-
-    return @
+  @register: (name, model) =>
+    this::models[name] = model
+    return this
 
   constructor: (url, options = {}) ->
     throw new Error 'No url defined' if not url
