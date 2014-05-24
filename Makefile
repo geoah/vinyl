@@ -1,10 +1,9 @@
-NPM_EXECUTABLE_HOME := node_modules/.bin
-PATH := ${NPM_EXECUTABLE_HOME}:${PATH}
+NPM_BIN := node_modules/.bin
 
 TEST_DIR = ./spec
 
 test: npm-dep
-	jasmine-node --coffee --color --verbose ${TEST_DIR}
+	${NPM_BIN}/jasmine-node --coffee --color --verbose ${TEST_DIR}
 
 npm-dep:
 	test `which npm` || echo 'You need npm to do npm install... makes sense?'
