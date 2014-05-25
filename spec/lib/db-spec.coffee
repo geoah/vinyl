@@ -7,7 +7,7 @@ describe "Db", ->
   describe ".register()", ->
     beforeEach ->
       @name  = "Book"
-      @model = createSpy(@name)
+      @model = jasmine.createSpy(@name)
 
     it "registers model with Db", ->
       Db.register(@name, @model)
@@ -18,22 +18,22 @@ describe "Db", ->
 
   describe "insert()", ->
     beforeEach ->
-      @collection    = createSpyObj("Collection", ["insert"])
+      @collection    = jasmine.createSpyObj("Collection", ["insert"])
       @collectionErr = undefined
 
-      spyOn(@subject, 'collection').andCallFake (name, fun) =>
+      spyOn(@subject, 'collection').and.callFake (name, fun) =>
         fun(@collectionErr, @collection)
 
       @name = "books"
       @doc  = {foo: "bar"}
       @opts = {timeout: 5}
-      @cb   = createSpy()
+      @cb   = jasmine.createSpy()
 
     it "fetches collection instance via collection()", ->
       @subject.insert(@name, @doc, @opts, @cb)
       expect(@subject.collection).toHaveBeenCalled()
-      expect(@subject.collection.calls[0].args[0]).toBe(@name)
-      expect(typeof @subject.collection.calls[0].args[1]).toBe("function")
+      expect(@subject.collection.calls.mostRecent().args[0]).toBe(@name)
+      expect(typeof @subject.collection.calls.mostRecent().args[1]).toBe("function")
 
     it "inserts document into collection", ->
       @subject.insert(@name, @doc, @opts, @cb)
