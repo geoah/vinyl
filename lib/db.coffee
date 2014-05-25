@@ -35,8 +35,8 @@ class Db
       @_db = db
       @_db.on 'close', (err) =>
         @_collections = {}
-        console.error err if err
-        return cb err
+        @_connected = false
+        # TODO Handle error.
 
       cb undefined, db
 
