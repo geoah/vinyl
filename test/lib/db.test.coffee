@@ -7,6 +7,7 @@ describe "Db", ->
 
   describe "connecting to a non existing db", ->
     beforeEach ->
+
       @subject = new Db("mongodb://this-does-not-exist")
 
     afterEach (done) ->
@@ -67,29 +68,26 @@ describe "Db", ->
 
     describe "insert()", ->
       beforeEach ->
-        @collectionErr = undefined
-        @subjectCollectionSpy = sinon.spy @subject, "collection"
+        @collectionName = "books"
+        @doc = foo: "bar"
+        @opts = timeout: 5
 
-        @name = "books"
-        @doc = {foo: "bar"}
-        @opts = {timeout: 5}
+        @collectionSpy = sinon.spy @subject, "collection"
 
       it "fetches collection instance via collection()", (done) ->
-        @subject.insert @name, @doc, @opts, (err, collection) =>
-          assert.equal true, @subjectCollectionSpy.calledWith @name
+        @subject.insert @collectionName, @doc, @opts, (err, collection) =>
+          assert.equal @collectionName, @collectionSpy.lastCall.args[0]
+          assert.equal 'object', typeof @collectionSpy.lastCall.args[1]
+          assert.equal 'function', typeof @collectionSpy.lastCall.args[2]
           assert.equal err, undefined
           assert.equal 'object', typeof collection
-          assert.equal 'function', typeof @subjectCollectionSpy.getCall(0).args[1]
           done()
-#
-#      it "inserts document into collection", ->
-#        @subject.insert(@name, @doc, @opts, @cb)
-#        expect(@collection.insert).toHaveBeenCalledWith(@doc, @opts, @cb)
-#
-#      describe "when an error occurs while fetching collection instance", ->
-#        beforeEach -> @collectionErr = {message: "ZOMG PANIC!"}
-#
-#        it "cb is called with error", ->
-#          @subject.insert(@name, @doc, @opts, @cb)
-#          expect(@cb).toHaveBeenCalledWith(@collectionErr)
-#          expect(@collection.insert).not.toHaveBeenCalled()
+
+      it "inserts document into collection", (done) ->
+        @subject.insert @collectionName, @doc, @opts, (err, docs) =>
+          assert.equal err, undefined
+          assert.equal docs.length, 1
+          assert.equal docs[0].foo, @doc.foo
+          assert.notEqual docs[0]._id, undefined
+          done()
+
