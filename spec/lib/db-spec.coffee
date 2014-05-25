@@ -45,3 +45,4 @@ describe "Db", ->
       it "cb is called with error", ->
         @subject.insert(@name, @doc, @opts, @cb)
         expect(@cb).toHaveBeenCalledWith(@collectionErr)
+        expect(@collection.insert).not.toHaveBeenCalled()
