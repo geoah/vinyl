@@ -1,4 +1,4 @@
-expect = require 'expect.js'
+assert = require 'assert'
 sinon = require 'sinon'
 
 Db = require "../../lib/db"
@@ -15,8 +15,8 @@ describe "Db", ->
 
     it "cb is called with error", (done) ->
       @subject.connect (err, db) ->
-        expect(err).not.to.be.equal undefined
-        expect(db).to.be.equal undefined
+        assert.notEqual err, undefined
+        assert.equal db, undefined
         done()
 
   describe "connecting to a db", ->
@@ -34,25 +34,35 @@ describe "Db", ->
 
       it "registers model with Db", ->
         Db.register(@name, @model)
-        expect(Db::models[@name]).to.be(@model)
+        assert.equal Db::models[@name], @model
 
       it "returns Db", ->
-        expect(Db.register(@name, @model)).to.be(Db)
+        assert.equal Db.register(@name, @model), Db
 
     describe "connect()", ->
       it "connects to mongodb", (done) ->
         @subject.connect (err, db) ->
-          expect(err).to.be(undefined)
-          expect(db.constructor.name).to.be('Db')
+          assert.equal err, undefined
+          assert.equal db.constructor.name, 'Db'
           done()
 
     describe "collection()", ->
-      it "retrieves collection", (done) ->
+      it "retrieves collection without options", (done) ->
         collectionName = "test-collection"
 
         @subject.collection collectionName, (err, collection) ->
-          expect(err).to.be undefined
-          expect(collection.constructor.name).to.be('Collection')
+          assert.equal err, undefined
+          assert.equal collection.constructor.name, 'Collection'
+          done()
+
+      it "retrieves collection with options", (done) ->
+        collectionName = "test-collection"
+        options = serializeFunctions: true
+
+        @subject.collection collectionName, options, (err, collection) ->
+          assert.equal err, undefined
+          assert.equal collection.constructor.name, 'Collection'
+          assert.equal collection.serializeFunctions, true
           done()
 
 #    describe "insert()", ->
