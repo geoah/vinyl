@@ -16,6 +16,12 @@ class Db
     @_url = url
     @_options = options
 
+  close: (cb) =>
+    if @_connected or @_connecting
+      return @_db.close cb
+    else
+      cb undefined
+
   connect: (cb) =>
     mongodb.connect @_url, @_options, (err, db) =>
       @_connecting = false
