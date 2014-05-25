@@ -2,7 +2,7 @@ Db = require "../../lib/db"
 
 describe "Db", ->
   beforeEach ->
-    @subject = new Db("mongodb://foo.bar:1234")
+    @subject = new Db("mongodb://localhost")
 
   describe ".register()", ->
     beforeEach ->
@@ -15,6 +15,21 @@ describe "Db", ->
 
     it "returns Db", ->
       expect(Db.register(@name, @model)).toBe(Db)
+
+  describe "connect()", ->
+    it "connects to mongodb", (done) ->
+      @subject.connect (err, db) =>
+        expect(err).toBe(undefined)
+        expect(db.constructor.name).toBe('Db')
+        done()
+
+    describe "when an error occurs while trying to connect", ->
+      it "cb is called with error", (done) ->
+        unknownDb = new Db("mongodb://this-does-not-exist")
+        unknownDb.connect (err, db) =>
+          expect(err).not.toBe(undefined)
+          expect(db).toBe(undefined)
+          done()
 
   describe "insert()", ->
     beforeEach ->
