@@ -97,7 +97,10 @@ class Db
       collection.remove query, options, cb
 
   insert: (collectionName, document, options, cb) =>
-    @collection collectionName, (err, collection) =>
+    if not cb
+      cb = options
+      options = {}
+    @collection collectionName, {}, (err, collection) =>
       return cb err if err
       collection.insert document, options, cb
 
