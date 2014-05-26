@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index",
   "scripts": {
-    "test": "node_modules/.bin/mocha --reporter spec --compilers coffee:coffee-script/register test/lib/*.coffee"
+    "test": "node_modules/.bin/mocha --colors --reporter spec --compilers coffee:coffee-script/register test/lib/*.coffee"
   },
   "repository": {
     "type": "git",
