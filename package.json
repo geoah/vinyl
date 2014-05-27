@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha --colors --reporter spec --compilers coffee:coffee-script/register test/lib/*.coffee"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,13 @@
   },
   "homepage": "https://github.com/geoah/vinyl",
   "dependencies": {
+    "coffee-script": "1.7.x",
     "mongodb": "^1.4.4",
     "regexp-clone": "0.0.1"
+  },
+  "devDependencies": {
+    "assert": "^1.1.1",
+    "mocha": "^1.19.0",
+    "sinon": "^1.10.0"
   }
 }

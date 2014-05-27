@@ -3,11 +3,9 @@ mongodb = require 'mongodb'
 class Db
   models: {}
 
-  @register = (name, model) =>
-    console.info name, model
-    @::models[name] = model
-
-    return @
+  @register: (name, model) =>
+    this::models[name] = model
+    return this
 
   constructor: (url, options = {}) ->
     throw new Error 'No url defined' if not url
@@ -17,6 +15,12 @@ class Db
 
     @_url = url
     @_options = options
+
+  close: (cb) =>
+    if @_connected or @_connecting
+      return @_db.close cb
+    else
+      cb undefined
 
   connect: (cb) =>
     mongodb.connect @_url, @_options, (err, db) =>
@@ -31,8 +35,8 @@ class Db
       @_db = db
       @_db.on 'close', (err) =>
         @_collections = {}
-        console.error err if err
-        return cb err
+        @_connected = false
+        # TODO Handle error.
 
       cb undefined, db
 
@@ -93,7 +97,10 @@ class Db
       collection.remove query, options, cb
 
   insert: (collectionName, document, options, cb) =>
-    @collection collectionName, (err, collection) =>
+    if not cb
+      cb = options
+      options = {}
+    @collection collectionName, {}, (err, collection) =>
       return cb err if err
       collection.insert document, options, cb
 
