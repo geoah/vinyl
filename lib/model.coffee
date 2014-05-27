@@ -100,21 +100,32 @@ class Model
 
     _id = new ObjectID _id if typeof _id is 'string'
     query = _id: _id
-    @prototype.db.findAndModify @prototype.collection, query, {}, document, options, cb
+    @prototype.db.findAndModify @prototype.collection, query, {}, document, options, (err, row) =>
+      return cb err if err
+      model = new @ row
+      cb undefined, model
 
   @findAndModify: (query, sort, document, options, cb) ->
     if not cb
       cb = options
       options = {}
 
-    @prototype.db.findAndModify @prototype.collection, query, sort, document, options, cb
+    @prototype.db.findAndModify @prototype.collection, query, sort, document, options, (err, rows) =>
+      return cb err if err
+      models = []
+      for row in rows then models.push new @ row
+      cb undefined, models
 
   @insert: (documents, options, cb) ->
     if not cb
       cb = options
       options = {}
 
-    @prototype.db.insert @prototype.collection, documents, options, cb
+    @prototype.db.insert @prototype.collection, documents, options, (err, rows) =>
+      return cb err if err
+      models = []
+      for row in rows then models.push new @ row
+      cb undefined, models
 
   @remove: (query, options, cb) ->
     if not cb
@@ -136,10 +147,15 @@ class Model
       return cb err if err
       cb undefined, result
 
+isArray = (value) ->
+  return Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+
 toJSON = (object) ->
   doc = {}
   for own key, value of object
-    if typeof value is 'function'
+    if isArray value
+      doc[key] = value
+    else if typeof value is 'function'
       # Ignore
     else if value instanceof Date
       doc[key] = new value.constructor +value
