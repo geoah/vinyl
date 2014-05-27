@@ -1,9 +1,12 @@
 mongodb = require 'mongodb'
 
+Model = require './model'
+
 class Db
   models: {}
 
   @register: (name, model) =>
+    throw new Error 'Invalid model' if model.prototype not instanceof Model
     this::models[name] = model
     return this
 
