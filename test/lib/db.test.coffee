@@ -75,12 +75,12 @@ describe "Db", ->
         @collectionSpy = sinon.spy @subject, "collection"
 
       it "fetches collection instance via collection()", (done) ->
-        @subject.insert @collectionName, @doc, @opts, (err, collection) =>
+        @subject.insert @collectionName, @doc, @opts, (err, docs) =>
           assert.equal @collectionName, @collectionSpy.lastCall.args[0]
           assert.equal 'object', typeof @collectionSpy.lastCall.args[1]
           assert.equal 'function', typeof @collectionSpy.lastCall.args[2]
           assert.equal err, undefined
-          assert.equal 'object', typeof collection
+          assert.equal 'object', typeof docs
           done()
 
       it "inserts document into collection", (done) ->
