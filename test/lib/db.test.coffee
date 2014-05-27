@@ -24,11 +24,11 @@ describe "Db", ->
       Db::models = []
       done()
 
-    it "should register the provided model", ->
+    it "registers the provided model", ->
       Db.register @name, @model
       assert.equal Db::models[@name], @model
 
-    it "should fail if model is of incorrect type", ->
+    it "fails if model is of incorrect type", ->
       model = name: "Fake Book"
 
       try
@@ -38,18 +38,18 @@ describe "Db", ->
         assert.notEqual err, undefined
         assert.notEqual Db::models[@name], model
 
-    it "should return the Db", ->
+    it "returns Db", ->
       _Db = Db.register @name, @model
       assert.equal _Db, Db
 
   describe "connect()", ->
-    it "should connect to a mongodb instance", (done) ->
+    it "connects to a mongodb instance", (done) ->
       @subject.connect (err, db) ->
         assert.equal err, undefined
         assert.equal db.constructor.name, 'Db'
         done()
 
-    it "should fail to connect to an unknown mongodb instance", (done) ->
+    it "fails to connect to an unknown mongodb instance", (done) ->
       @subject = new Db("mongodb://this-does-not-exist")
       @subject.connect (err, db) ->
         assert.notEqual err, undefined
@@ -60,13 +60,13 @@ describe "Db", ->
     beforeEach ->
       @collectionName = "test-collection"
 
-    it "should retrieve collection by name and without options", (done) ->
+    it "retrieves collection by name and without options", (done) ->
       @subject.collection @collectionName, (err, collection) ->
         assert.equal err, undefined
         assert.equal collection.constructor.name, 'Collection'
         done()
 
-    it "should retrieve collection by name and options", (done) ->
+    it "retrieves collection by name and options", (done) ->
       options = serializeFunctions: true
       @subject.collection @collectionName, options, (err, collection) ->
         assert.equal err, undefined
@@ -82,7 +82,7 @@ describe "Db", ->
 
       @collectionSpy = sinon.spy @subject, "collection"
 
-    it "should retrieve collection instance by name", (done) ->
+    it "retrieves collection instance by name", (done) ->
       @subject.insert @collectionName, @doc, @opts, (err, docs) =>
         assert.equal @collectionName, @collectionSpy.lastCall.args[0] # Collection name
         assert.equal 'object', typeof @collectionSpy.lastCall.args[1] # Options
@@ -91,7 +91,7 @@ describe "Db", ->
         assert.equal 'object', typeof docs
         done()
 
-    it "should insert document using the retrieved mongodb collection instance", (done) ->
+    it "inserts document using the retrieved mongodb collection instance", (done) ->
       @subject.insert @collectionName, @doc, @opts, (err, docs) =>
         assert.equal err, undefined
         assert.equal docs.length, 1
