@@ -2,92 +2,100 @@ assert = require 'assert'
 sinon = require 'sinon'
 
 Db = require "../../lib/db"
+Model = require "../../lib/model"
 
 describe "Db", ->
+  beforeEach ->
+    @subject = new Db("mongodb://localhost")
 
-  describe "connecting to a non existing db", ->
-    beforeEach ->
+  afterEach (done) ->
+    @subject.close () ->
+      done()
 
-      @subject = new Db("mongodb://this-does-not-exist")
+  describe "register()", ->
+    beforeEach (done) ->
+      class Item extends Model
+
+      @name  = "Book"
+      @model = Item
+      done()
 
     afterEach (done) ->
-      @subject.close () ->
+      Db::models = []
+      done()
+
+    it "should register the provided model", ->
+      Db.register @name, @model
+      assert.equal Db::models[@name], @model
+
+    it "should fail if model is of incorrect type", ->
+      model = name: "Fake Book"
+
+      try
+        Db.register @name, model
+        throw new Error
+      catch err
+        assert.notEqual err, undefined
+        assert.notEqual Db::models[@name], model
+
+    it "should return the Db", ->
+      _Db = Db.register @name, @model
+      assert.equal _Db, Db
+
+  describe "connect()", ->
+    it "should connect to a mongodb instance", (done) ->
+      @subject.connect (err, db) ->
+        assert.equal err, undefined
+        assert.equal db.constructor.name, 'Db'
         done()
 
-    it "cb is called with error", (done) ->
+    it "should fail to connect to an unknown mongodb instance", (done) ->
+      @subject = new Db("mongodb://this-does-not-exist")
       @subject.connect (err, db) ->
         assert.notEqual err, undefined
         assert.equal db, undefined
         done()
 
-  describe "connecting to a db", ->
+  describe "collection()", ->
     beforeEach ->
-      @subject = new Db("mongodb://localhost")
+      @collectionName = "test-collection"
 
-    afterEach (done) ->
-      @subject.close () ->
+    it "should retrieve collection by name and without options", (done) ->
+      @subject.collection @collectionName, (err, collection) ->
+        assert.equal err, undefined
+        assert.equal collection.constructor.name, 'Collection'
         done()
 
-    describe ".register()", ->
-      beforeEach ->
-        @name  = "Book"
-        @model = name: @name
+    it "should retrieve collection by name and options", (done) ->
+      options = serializeFunctions: true
+      @subject.collection @collectionName, options, (err, collection) ->
+        assert.equal err, undefined
+        assert.equal collection.constructor.name, 'Collection'
+        assert.equal collection.serializeFunctions, true
+        done()
 
-      it "registers model with Db", ->
-        Db.register(@name, @model)
-        assert.equal Db::models[@name], @model
+  describe "insert()", ->
+    beforeEach ->
+      @collectionName = "books"
+      @doc = foo: "bar"
+      @opts = timeout: 5
 
-      it "returns Db", ->
-        assert.equal Db.register(@name, @model), Db
+      @collectionSpy = sinon.spy @subject, "collection"
 
-    describe "connect()", ->
-      it "connects to mongodb", (done) ->
-        @subject.connect (err, db) ->
-          assert.equal err, undefined
-          assert.equal db.constructor.name, 'Db'
-          done()
+    it "should retrieve collection instance by name", (done) ->
+      @subject.insert @collectionName, @doc, @opts, (err, docs) =>
+        assert.equal @collectionName, @collectionSpy.lastCall.args[0] # Collection name
+        assert.equal 'object', typeof @collectionSpy.lastCall.args[1] # Options
+        assert.equal 'function', typeof @collectionSpy.lastCall.args[2] # Callback
+        assert.equal err, undefined
+        assert.equal 'object', typeof docs
+        done()
 
-    describe "collection()", ->
-      it "retrieves collection without options", (done) ->
-        collectionName = "test-collection"
-
-        @subject.collection collectionName, (err, collection) ->
-          assert.equal err, undefined
-          assert.equal collection.constructor.name, 'Collection'
-          done()
-
-      it "retrieves collection with options", (done) ->
-        collectionName = "test-collection"
-        options = serializeFunctions: true
-
-        @subject.collection collectionName, options, (err, collection) ->
-          assert.equal err, undefined
-          assert.equal collection.constructor.name, 'Collection'
-          assert.equal collection.serializeFunctions, true
-          done()
-
-    describe "insert()", ->
-      beforeEach ->
-        @collectionName = "books"
-        @doc = foo: "bar"
-        @opts = timeout: 5
-
-        @collectionSpy = sinon.spy @subject, "collection"
-
-      it "fetches collection instance via collection()", (done) ->
-        @subject.insert @collectionName, @doc, @opts, (err, docs) =>
-          assert.equal @collectionName, @collectionSpy.lastCall.args[0]
-          assert.equal 'object', typeof @collectionSpy.lastCall.args[1]
-          assert.equal 'function', typeof @collectionSpy.lastCall.args[2]
-          assert.equal err, undefined
-          assert.equal 'object', typeof docs
-          done()
-
-      it "inserts document into collection", (done) ->
-        @subject.insert @collectionName, @doc, @opts, (err, docs) =>
-          assert.equal err, undefined
-          assert.equal docs.length, 1
-          assert.equal docs[0].foo, @doc.foo
-          assert.notEqual docs[0]._id, undefined
-          done()
+    it "should insert document using the retrieved mongodb collection instance", (done) ->
+      @subject.insert @collectionName, @doc, @opts, (err, docs) =>
+        assert.equal err, undefined
+        assert.equal docs.length, 1
+        assert.equal docs[0].foo, @doc.foo
+        assert.notEqual docs[0]._id, undefined
+        done()
 
