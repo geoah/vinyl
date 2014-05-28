@@ -5,8 +5,9 @@ Db = require "../../lib/db"
 Model = require "../../lib/model"
 
 describe "Db", ->
-  beforeEach ->
+  beforeEach (done) ->
     @subject = new Db("mongodb://localhost")
+    done()
 
   afterEach (done) ->
     @subject.close () ->
@@ -57,8 +58,9 @@ describe "Db", ->
         done()
 
   describe "collection()", ->
-    beforeEach ->
+    beforeEach (done) ->
       @collectionName = "test-collection"
+      done()
 
     it "retrieves collection by name and without options", (done) ->
       @subject.collection @collectionName, (err, collection) ->
@@ -75,12 +77,13 @@ describe "Db", ->
         done()
 
   describe "insert()", ->
-    beforeEach ->
+    beforeEach (done) ->
       @collectionName = "books"
       @doc = foo: "bar"
       @opts = timeout: 5
 
       @collectionSpy = sinon.spy @subject, "collection"
+      done()
 
     it "retrieves collection instance by name", (done) ->
       @subject.insert @collectionName, @doc, @opts, (err, docs) =>
