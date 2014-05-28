@@ -3,11 +3,12 @@ node_modules
 
 # Coffee-Script
 lib/*.js
-lib/*.map
-
-app.js
-app.map
+test/lib/*.js
+*.map
 
 # OS
 .DS_Store
 ._*
+
+# Editor
+.idea
