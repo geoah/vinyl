@@ -6,7 +6,7 @@ class Model
     @_map doc
 
   _map: (doc) ->
-    for key, value of doc
+    for own key, value of doc
       @[key] = value
 
   remove: (cb) ->
