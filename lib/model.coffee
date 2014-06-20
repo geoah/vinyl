@@ -147,13 +147,12 @@ class Model
       return cb err if err
       cb undefined, result
 
-isArray = (value) ->
-  return Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
 
 toJSON = (object) ->
   doc = {}
   for own key, value of object
-    if isArray value
+    if typeIsArray value
       doc[key] = value
     else if typeof value is 'function'
       # Ignore
